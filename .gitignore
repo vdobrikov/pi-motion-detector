@@ -2,3 +2,6 @@
 venv/
 *.log
 *.iml
+.DS_Store
+
+data/
