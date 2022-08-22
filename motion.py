@@ -70,6 +70,7 @@ camera = create_camera()
 pir = MotionSensor(config.motion_sensor_pin)
 bot = telepot.Bot(config.telepot_token)
 log.info("Motion sensor started")
+send_message("Motion sensor started")
 
 create_folder_if_not_exists(config.data_folder)
 while True:
