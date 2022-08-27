@@ -3,5 +3,7 @@ venv/
 *.log
 *.iml
 .DS_Store
-
+*.out
+*.log.*
+__pycache__/
 data/
