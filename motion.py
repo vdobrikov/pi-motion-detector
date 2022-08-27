@@ -77,11 +77,14 @@ while True:
     pir.wait_for_motion()
     log.info("Motion detected")
     send_message("Motion detected")
+    picture_count = 0
     while pir.motion_detected:
         filename = take_picture()
-        if filename:
+        if filename and picture_count < config.max_count_picture_to_send:
             send_picture(filename)
-        time.sleep(1)
+            picture_count = picture_count + 1
+        if config.take_picture_delay_seconds > 0:
+            time.sleep(config.take_picture_delay_seconds)
     log.info("No motion")
     send_message("No motion")
     delete_files_older_than(config.delete_pictures_older_than_seconds, config.data_folder)
