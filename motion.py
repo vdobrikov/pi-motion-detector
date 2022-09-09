@@ -63,6 +63,10 @@ def delete_files_older_than(seconds, directory):
         log.error("Error deleting files: {}".format(e))
 
 
+def get_file_size_in_kb(file):
+    return os.path.getsize(file) / 1024
+
+
 fileConfig('logging.ini')
 log = logging.getLogger('Main')
 
@@ -73,18 +77,20 @@ log.info("Motion sensor started")
 send_message("Motion sensor started")
 
 create_folder_if_not_exists(config.data_folder)
+no_motion_file_size = 0
 while True:
     pir.wait_for_motion()
     log.info("Motion detected")
     send_message("Motion detected")
-    picture_count = 0
     while pir.motion_detected:
         filename = take_picture()
-        if filename and picture_count < config.max_count_picture_to_send:
+        if filename and abs(get_file_size_in_kb(filename) - no_motion_file_size) > config.image_size_diff_threshold_kb:
             send_picture(filename)
-            picture_count = picture_count + 1
         if config.take_picture_delay_seconds > 0:
             time.sleep(config.take_picture_delay_seconds)
     log.info("No motion")
+    filename = take_picture()
+    if filename:
+        no_motion_file_size = get_file_size_in_kb(filename)
     send_message("No motion")
     delete_files_older_than(config.delete_pictures_older_than_seconds, config.data_folder)
